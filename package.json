@@ -1,0 +1,17 @@
+{
+  "name": "spendwise-budget-tracker",
+  "version": "1.0.0",
+  "description": "Full-stack MERN Budget Tracker app ready for deployment",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "build": "npm run install-server && npm run install-client && npm run build-client",
+    "install-server": "cd server && npm install",
+    "install-client": "cd client && npm install",
+    "build-client": "cd client && npm run build",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\""
+  },
+  "keywords": ["mern", "budget-tracker", "react", "express", "mongodb"],
+  "author": "",
+  "license": "ISC"
+}
