@@ -46,9 +46,16 @@ A modern full-stack web application designed for quick, effortless daily budget 
 ## 💻 Local Development Setup
 
 ```bash
-# 1. Install dependencies for server and client
-npm run build
+# 1. Install dependencies (root for `concurrently`, then server and client)
+npm install
+npm run install-server
+npm run install-client
 
-# 2. Start server & client concurrently
-npm start
+# 2. Add server/.env (MONGO_URI, JWT_SECRET, PORT=4001); client/.env points the app at /api,
+#    which the Vite dev server proxies to http://localhost:4001
+
+# 3. Start server (nodemon) & client (Vite on http://localhost:5173) together
+npm run dev
 ```
+
+To try the production build locally: `npm run build` then `npm start` (Express serves `client/dist` and the API from one port).
