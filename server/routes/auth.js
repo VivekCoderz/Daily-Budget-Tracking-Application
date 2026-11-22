@@ -125,7 +125,9 @@ router.get('/me', auth, async (req, res) => {
 
 // POST /api/auth/logout - Clear auth cookie
 router.post('/logout', (req, res) => {
-  res.clearCookie('token', COOKIE_OPTIONS);
+  // Express 4 turns maxAge into a future expiry, which would keep the cookie alive
+  const { maxAge, ...clearOptions } = COOKIE_OPTIONS;
+  res.clearCookie('token', clearOptions);
   res.json({ message: 'Logged out successfully' });
 });
 
