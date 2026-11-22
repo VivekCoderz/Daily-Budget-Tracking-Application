@@ -14,17 +14,21 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  process.env.CLIENT_URL
+  'https://daily-budget-tracker-one.vercel.app',
+  process.env.CLIENT_URL,
+  process.env.RENDER_EXTERNAL_URL // set by Render: same-origin requests in the single-service deploy
 ].filter(Boolean);
 
 // Middleware
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, or same-origin production requests)
-    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV === 'production') {
+    // Allow requests with no origin (like mobile apps, curl, or same-origin GET requests).
+    // Any other origin must be listed: with credentials: true, allowing every origin
+    // would let any website make authenticated requests with the user's cookie.
+    if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    callback(null, true);
+    callback(null, false);
   },
   credentials: true
 }));
@@ -48,10 +52,9 @@ app.get('/api/health', (req, res) => {
 const clientDistPath = path.join(__dirname, '../client/dist');
 if (process.env.NODE_ENV === 'production' || require('fs').existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(clientDistPath, 'index.html'));
-    }
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next(); // unknown API route -> 404 instead of hanging
+    res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 }
 
